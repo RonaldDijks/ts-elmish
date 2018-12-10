@@ -1,6 +1,6 @@
-export type Effect = (dispatch: any) => void
+export type Effect<Msg> = (dispatch: Dispatch<Msg>) => void
 
-export type Update<State, Msg> = (msg: Msg, state: State) => StateChange<State>
+export type Update<State, Msg> = (msg: Msg, state: State) => StateChange<State, Msg>
 
 export type Dispatch<Msg> = (msg: Msg) => void
 
@@ -8,17 +8,17 @@ export type View<State, Msg, Output = any> = (state: State, dispatch: Dispatch<M
 
 export type Done<State> = (state: State) => void
 
-export type StateChange<State> = [State, Effect?]
+export type StateChange<State, Msg> = [State, Effect<Msg>?]
 
 export interface Program<State, Msg, Output = any> {
   update: Update<State, Msg>
   view: View<State, Msg, Output>
   done?: Done<State>
-  init: StateChange<State>
+  init: StateChange<State, Msg>
 }
 
 export const mkProgram = <State, Msg, Output = any>(
-  init: StateChange<State>,
+  init: StateChange<State, Msg>,
   update: Update<State, Msg>,
   view: View<State, Msg, Output>,
   done?: Done<State>
@@ -54,7 +54,7 @@ export class Runtime<State, Msg> {
     }
   }
 
-  private change([state, effect]: StateChange<State>) {
+  private change([state, effect]: StateChange<State, Msg>) {
     if (this.state.kind === 'running') {
       this.state.value = state
       if (effect) {
