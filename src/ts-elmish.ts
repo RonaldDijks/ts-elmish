@@ -55,7 +55,7 @@ export class Runtime<State, Msg> {
   }
 
   private change([state, effect]: StateChange<State>) {
-    if (this.state.kind !== 'not-running') {
+    if (this.state.kind === 'running') {
       this.state.value = state
       if (effect) {
         effect(this.dispatch)
